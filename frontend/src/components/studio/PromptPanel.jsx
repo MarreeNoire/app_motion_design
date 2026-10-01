@@ -3,8 +3,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DURATIONS, ASPECTS, PALETTES, QUALITIES, PRESET_PROMPTS } from "@/lib/storyboard";
-import { Sparkles, Wand2, ImageUp, Music, X, Clapperboard, Loader2, Palette } from "lucide-react";
+import { DURATIONS, ASPECTS, QUALITIES, PRESET_PROMPTS } from "@/lib/storyboard";
+import { Sparkles, Wand2, ImageUp, Music, X, Clapperboard, Loader2 } from "lucide-react";
 
 const Field = ({ label, children }) => (
   <div className="space-y-2">
@@ -112,28 +112,6 @@ export const PromptPanel = ({
               />
               <span className="text-[11px] font-semibold">{a.id}</span>
               <span className="text-[9px] text-slate-400 text-center leading-tight px-1">{a.hint}</span>
-            </button>
-          ))}
-        </div>
-      </Field>
-
-      <Field label="Palette de couleurs">
-        <div className="flex flex-wrap gap-2">
-          {PALETTES.map((pal) => (
-            <button
-              key={pal.id}
-              data-testid={`palette-${pal.id}`}
-              onClick={() => update({ paletteId: pal.id })}
-              title={pal.label}
-              className={`relative h-9 w-14 overflow-hidden rounded-lg border-2 transition-all ${
-                settings.paletteId === pal.id ? "border-white scale-105" : "border-white/10 hover:border-white/40"
-              }`}
-            >
-              <span className="absolute inset-0 flex">
-                <span className="flex-1" style={{ background: pal.primary }} />
-                <span className="flex-1" style={{ background: pal.secondary }} />
-                <span className="flex-1" style={{ background: pal.accent }} />
-              </span>
             </button>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { exportVideo, pickMime } from "@/lib/motionEngine";
 import { toast } from "sonner";
 import { Download, Loader2, FileVideo, Clapperboard } from "lucide-react";
 
-export const ExportPanel = ({ project, logoImg, audioUrl, onBeforeExport }) => {
+export const ExportPanel = ({ project, audioUrl, onBeforeExport }) => {
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [lastUrl, setLastUrl] = useState(null);
@@ -24,7 +24,6 @@ export const ExportPanel = ({ project, logoImg, audioUrl, onBeforeExport }) => {
     const tId = toast.loading("Rendu de la vidéo en temps réel…");
     try {
       const { blob, ext } = await exportVideo(project, {
-        logoImg,
         audioUrl,
         fps: 30,
         bitrate: 10_000_000,

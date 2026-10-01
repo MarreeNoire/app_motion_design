@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from "react";
-import { renderFrame, ensureFonts } from "@/lib/motionEngine";
+import { renderFrame, ensureProjectFonts } from "@/lib/motionEngine";
 import { Play, Pause, RotateCcw, Maximize, Grid3x3, Gauge } from "lucide-react";
 
 const fmt = (s) => {
@@ -10,7 +10,7 @@ const fmt = (s) => {
 
 const SPEEDS = [0.5, 1, 1.5, 2];
 
-export const CanvasPlayer = forwardRef(({ project, logoImg, audioUrl, onTime }, ref) => {
+export const CanvasPlayer = forwardRef(({ project, audioUrl, onTime }, ref) => {
   const canvasRef = useRef(null);
   const wrapRef = useRef(null);
   const audioRef = useRef(null);
@@ -31,8 +31,8 @@ export const CanvasPlayer = forwardRef(({ project, logoImg, audioUrl, onTime }, 
     const canvas = canvasRef.current;
     if (!canvas || !project) return;
     const ctx = canvas.getContext("2d");
-    renderFrame(ctx, project, tRef.current, { logoImg });
-  }, [project, logoImg]);
+    renderFrame(ctx, project, tRef.current);
+  }, [project]);
 
   // initialise / reset on project change
   useEffect(() => {
@@ -44,7 +44,7 @@ export const CanvasPlayer = forwardRef(({ project, logoImg, audioUrl, onTime }, 
     tRef.current = 0;
     setCurrentTime(0);
     onTime?.(0);
-    ensureFonts().then(() => {
+    ensureProjectFonts(project).then(() => {
       if (!cancelled) {
         setReady(true);
         draw();

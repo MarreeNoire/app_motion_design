@@ -1,7 +1,4 @@
-// Storyboard / project assembly: maps an Agnes AI storyboard (or a local
-// fallback) into a renderable project for the motion engine.
-import { mixHex } from "./colors";
-
+// Storyboard / project assembly for the motion engine (theme + images driven).
 export const DURATIONS = [30, 35, 45, 60];
 
 export const ASPECTS = [
@@ -16,15 +13,6 @@ export const QUALITIES = [
   { id: "4k", label: "4K Ultra HD", short: 2160 },
 ];
 
-export const PALETTES = [
-  { id: "violet-cyan", label: "Violet / Cyan", primary: "#7C3AED", secondary: "#06B6D4", accent: "#A855F7" },
-  { id: "sunset", label: "Sunset", primary: "#F97316", secondary: "#EC4899", accent: "#FB7185" },
-  { id: "emerald", label: "Émeraude", primary: "#10B981", secondary: "#22D3EE", accent: "#34D399" },
-  { id: "gold", label: "Or / Noir", primary: "#F59E0B", secondary: "#EAB308", accent: "#FCD34D" },
-  { id: "royal", label: "Bleu Royal", primary: "#3B82F6", secondary: "#8B5CF6", accent: "#60A5FA" },
-  { id: "crimson", label: "Crimson", primary: "#EF4444", secondary: "#F97316", accent: "#FB7185" },
-];
-
 export const PRESET_PROMPTS = [
   "Créer une publicité motion design dynamique et moderne pour une application de livraison rapide avec typographie cinétique, couleurs vives et appel à l'action.",
   "Lancement produit Tech cyberpunk 3D pour une montre connectée futuriste, ambiance néon et transitions énergiques.",
@@ -32,54 +20,22 @@ export const PRESET_PROMPTS = [
   "Trailer d'application mobile SaaS de gestion financière, moderne, data-driven, avec statistiques animées et CTA fort.",
 ];
 
-const ROLE_STYLE = {
-  hook: { animation: "kinetic", particles: true, shape: "wave", tone: 0 },
-  problem: { animation: "slide", particles: false, shape: "grid", tone: 1 },
-  solution: { animation: "cards", particles: true, shape: "geo", tone: 0 },
-  features: { animation: "cards", particles: true, shape: "geo", tone: 1 },
-  showcase: { animation: "kenburns", particles: false, shape: "rings", tone: 0 },
-  benefits: { animation: "counters", particles: true, shape: "wave", tone: 1 },
-  cta: { animation: "cta", particles: true, shape: "burst", tone: 0 },
-};
-
-const DARK = "#09090B";
+const even = (n) => (n % 2 === 0 ? n : n + 1);
 
 export function computeDimensions(aspectId, qualityId) {
   const aspect = ASPECTS.find((a) => a.id === aspectId) || ASPECTS[2];
   const q = QUALITIES.find((x) => x.id === qualityId) || QUALITIES[1];
   const short = q.short;
-  // short side = min dimension
   if (aspect.w >= aspect.h) {
-    const h = short;
-    const w = Math.round((h * aspect.w) / aspect.h);
+    const h = short; const w = Math.round((h * aspect.w) / aspect.h);
     return { width: even(w), height: even(h) };
   }
-  const w = short;
-  const h = Math.round((w * aspect.h) / aspect.w);
+  const w = short; const h = Math.round((w * aspect.h) / aspect.w);
   return { width: even(w), height: even(h) };
 }
 
-const even = (n) => (n % 2 === 0 ? n : n + 1);
-
-function styleForScene(scene, palette) {
-  const base = ROLE_STYLE[scene.role] || ROLE_STYLE.solution;
-  const accent = base.tone === 0 ? palette.primary : palette.secondary;
-  const accent2 = base.tone === 0 ? palette.secondary : palette.primary;
-  const bg = [mixHex(DARK, accent, 0.12), mixHex(DARK, accent, 0.4)];
-  return {
-    animation: base.animation,
-    particles: base.particles,
-    shape: base.shape,
-    accent,
-    accent2,
-    bg,
-    textColor: "#FFFFFF",
-  };
-}
-
-// Build a renderable project from a storyboard response + settings.
+// Build a renderable project from a storyboard + settings (theme, images, logo).
 export function buildProject(storyboard, settings) {
-  const palette = settings.palette;
   const { width, height } = computeDimensions(settings.aspect, settings.quality);
   const scenes = storyboard.scenes.map((s, i) => ({
     id: `scene-${i}`,
@@ -92,15 +48,16 @@ export function buildProject(storyboard, settings) {
     headline: s.headline,
     subtext: s.subtext,
     keywords: s.keywords || [],
-    style: styleForScene(s, palette),
   }));
   return {
     duration: settings.duration,
     aspect: settings.aspect,
     width,
     height,
-    brandName: settings.brandName || storyboard.brandName || "",
-    palette,
+    brandName: settings.brandName || "",
+    theme: settings.theme,
+    images: settings.images || [],
+    logo: settings.logo || null,
     scenes,
     source: storyboard.source || "local",
   };
@@ -131,10 +88,7 @@ const STOPWORDS = new Set([
 ]);
 
 function keywordsFrom(prompt, count) {
-  const words = (prompt || "")
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s]/gu, " ")
-    .split(/\s+/)
+  const words = (prompt || "").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/)
     .filter((w) => w.length > 3 && !STOPWORDS.has(w));
   const uniq = [...new Set(words)];
   return uniq.slice(0, count).map((w) => w.charAt(0).toUpperCase() + w.slice(1));
@@ -144,7 +98,6 @@ export function buildLocalStoryboard(prompt, duration) {
   const weights = ROLE_TEMPLATES[duration] || ROLE_TEMPLATES[30];
   const kw = keywordsFrom(prompt, 12);
   const pick = (n) => (kw.length ? kw[n % kw.length] : "Impact");
-
   const copy = {
     hook: { headline: "Captez l'attention", subtext: "En 3 secondes chrono", keywords: [pick(0), pick(1)] },
     problem: { headline: "Le problème", subtext: "Ce qui freine aujourd'hui", keywords: [pick(2), pick(3)] },
@@ -154,25 +107,13 @@ export function buildLocalStoryboard(prompt, duration) {
     benefits: { headline: "Les bénéfices", subtext: "Gagnez du temps et plus encore", keywords: [pick(3), pick(9)] },
     cta: { headline: "Passez à l'action", subtext: "Disponible maintenant", keywords: ["Essayez maintenant"] },
   };
-
   const raw = weights.map(([role, w]) => [role, Math.round(w * duration * 100) / 100]);
   const total = raw.reduce((a, [, d]) => a + d, 0);
   raw[raw.length - 1][1] = Math.round((raw[raw.length - 1][1] + (duration - total)) * 100) / 100;
-
   let t = 0;
   const scenes = raw.map(([role, d], i) => {
-    const s = {
-      index: i,
-      role,
-      label: ROLE_LABELS[role] || role,
-      start: Math.round(t * 100) / 100,
-      end: Math.round((t + d) * 100) / 100,
-      duration: d,
-      ...copy[role],
-    };
-    t += d;
-    return s;
+    const s = { index: i, role, label: ROLE_LABELS[role] || role, start: Math.round(t * 100) / 100, end: Math.round((t + d) * 100) / 100, duration: d, ...copy[role] };
+    t += d; return s;
   });
-
   return { duration, scene_count: scenes.length, scenes, source: "local" };
 }
