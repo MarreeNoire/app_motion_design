@@ -1,0 +1,174 @@
+{
+  "project_name": "Agnes Motion Studio - Générateur Prompt-to-Motion-Design",
+  "language": "fr",
+  "theme": "Studio Dark (Obsidian #09090B, Charcoal #121218, Electric Violet #7C3AED, Cyan Glow #06B6D4)",
+  "emotional_archetype": "THE PERFORMANCE PRO & ELECTRIC STUDIO (Precision, Cinematic Depth, AI High Tech)",
+  "typography": {
+    "heading_font": "Outfit, Sora, sans-serif",
+    "body_font": "Inter, system-ui, sans-serif",
+    "code_mono_font": "JetBrains Mono, Fira Code, monospace",
+    "hierarchy": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white",
+      "h2": "text-xl sm:text-2xl font-bold tracking-tight text-slate-100",
+      "h3": "text-lg sm:text-xl font-semibold text-slate-200",
+      "card_title": "text-base font-semibold text-slate-100",
+      "label": "text-xs uppercase tracking-wider font-semibold text-slate-400",
+      "body": "text-sm text-slate-300 leading-relaxed",
+      "caption": "text-xs text-slate-400 font-mono"
+    }
+  },
+  "colors": {
+    "background_main": "#09090B",
+    "background_card": "#121218",
+    "background_card_hover": "#1A1A24",
+    "background_surface_elevated": "#181820",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_active": "rgba(124, 58, 237, 0.5)",
+    "primary_accent": "#7C3AED",
+    "primary_accent_hover": "#6D28D9",
+    "secondary_accent": "#06B6D4",
+    "gradient_brand": "linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%)",
+    "success": "#10B981",
+    "warning": "#F59E0B",
+    "danger": "#EF4444",
+    "text_primary": "#FAFAFA",
+    "text_secondary": "#A1A1AA",
+    "text_muted": "#71717A",
+    "timeline_track": "#1E1E2A",
+    "playhead_color": "#06B6D4"
+  },
+  "layout_structure": {
+    "header": {
+      "type": "Fixed glassmorphism top navigation",
+      "components": [
+        "Brand Logo (Agnes Motion Studio icon + gradient title)",
+        "API Key Manager Indicator Badge (Validée / Clé Manquante with quick modal trigger)",
+        "Project Title Editable Input",
+        "Presets Gallery button",
+        "Export Quick CTA button"
+      ]
+    },
+    "workspace_grid": {
+      "type": "3-Column Studio Grid Layout",
+      "desktop_spans": "Left Config (col-span-1 lg:col-span-3) | Center Preview Canvas & Timeline (col-span-1 lg:col-span-6) | Right Storyboard & Export (col-span-1 lg:col-span-3)",
+      "gap": "gap-5",
+      "padding": "p-4 sm:p-6"
+    }
+  },
+  "core_sections_and_components": [
+    {
+      "section_id": "api_key_manager",
+      "title": "Gestionnaire Clé API Agnes AI",
+      "description": "Formulaire complet de saisie, validation, sauvegarde dans localStorage et suppression de la clé API Agnes AI.",
+      "features": [
+        "Champ password avec toggle masque/démasque",
+        "Bouton 'Tester la clé' déclenchant une vérification simulée/réelle d'API",
+        "Badge statut (Saisie requise / Clé valide / Clé invalide)",
+        "Sauvegarde automatique localStorage et option 'Supprimer la clé'"
+      ]
+    },
+    {
+      "section_id": "prompt_and_parameters",
+      "title": "Prompt Principal & Paramètres de Génération",
+      "description": "Panneau de configuration créative de la vidéo.",
+      "features": [
+        "Grand Textarea avec suggestions de prompts prédéfinis (Ex: 'Lancement Produit Tech Cyberpunk 3D', 'Publicité Éco-responsable Minimaliste', 'Trailer Application Mobile SaaS')",
+        "Sélecteur de durée (30s, 35s, 45s, 60s) avec indication du nombre de scènes estimées",
+        "Sélecteur de format d'aspect avec aperçu visuel des ratios (9:16 Portrait Instagram/TikTok, 1:1 Carré, 16:9 Paysage YouTube/Desktop)",
+        "Éléments optionnels: Import Logo PNG (avec glisser-déposer), Sélecteur d'Audio de fond (Presets 'Minimal Ambient', 'Upbeat Cyber', 'Cinematic Brass' + Upload personnalisé), Sélecteur de palette de couleurs personnalisée"
+      ]
+    },
+    {
+      "section_id": "multi_scene_storyboard",
+      "title": "Workflow Storyboard Multi-Scènes",
+      "description": "Découpage chronologique interactif en plusieurs scènes générées automatiquement à partir du prompt principal.",
+      "features": [
+        "Cartes de scènes ordonnées (Scène 1: Intro, Scène 2: Feature Highlight, Scène 3: Motion Text, Scène 4: Call to Action)",
+        "Boutons d'édition par scène (modifier le prompt de scène, ajuster la durée individuelle, changer les effets de transition)",
+        "Capacité d'ajouter, réordonner ou supprimer une scène",
+        "Timeline visuelle synchronisée avec le lecteur canvas"
+      ]
+    },
+    {
+      "section_id": "generation_progress_tracker",
+      "title": "Barre de Progression & Étape de Rendu",
+      "description": "Suivi en temps réel de la génération Agnes AI à travers 4 étapes clés.",
+      "stages": [
+        "1. Analyse du prompt & Découpage syntaxique",
+        "2. Génération des assets Motion AI via Agnes",
+        "3. Assemblage des couches & Transitions 60fps",
+        "4. Rendu final vidéo & Encodage"
+      ],
+      "features": [
+        "Progression animée en % avec effet de lueur cyan/violette",
+        "Statut actif par étape avec logs visuels interactifs ('Processing frame 450/900...')"
+      ]
+    },
+    {
+      "section_id": "canvas_video_player",
+      "title": "Lecteur d'Aperçu Canvas Interactif",
+      "description": "Moteur d'animation canvas React simulant et rendant le motion design en temps réel.",
+      "features": [
+        "Visualiseur canvas haute qualité réactif au format sélectionné (16:9, 9:16, 1:1)",
+        "Contrôles vidéo complets: Play / Pause / Restart / Scrubber manuel (barre de défilement temporelle)",
+        "Affichage exact du timecode (ex: 00:12 / 00:30)",
+        "Sélecteur de vitesse de lecture (0.5x, 1x, 1.5x, 2x)",
+        "Mode Plein Écran (Fullscreen) et Toggle 'Grille de Composition / Safe Area'",
+        "Animations motion design riches générées dynamiquement (formes géométriques, typographie cinétique, particules 2D/3D, vagues d'énergie)"
+      ]
+    },
+    {
+      "section_id": "export_and_project_manager",
+      "title": "Module d'Exportation & Historique",
+      "description": "Téléchargement et configuration du fichier vidéo produit.",
+      "features": [
+        "Options de format d'export: MP4 (H.264 / AAC) ou WebM",
+        "Sélecteur de résolution (720p, 1080p Full HD, 4K Ultra HD)",
+        "Simulation de rendu & Téléchargement réel de fichier vidéo généré",
+        "Sauvegarde des projets récents dans l'historique studio"
+      ]
+    }
+  ],
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-md bg-[#121218]/80 border border-white/10",
+    "active_border_glow": "box-shadow: 0 0 15px rgba(124, 58, 237, 0.35)",
+    "timeline_style": "Custom scrollbar, dark grid background, colored scene blocks with rounded corners",
+    "canvas_overlay": "Subtle studio crosshair markers, aspect ratio masking overlay"
+  },
+  "media_urls": [
+    {
+      "category": "interface_preview_backgrounds",
+      "url": "https://images.unsplash.com/photo-1658953229625-aad99d7603b4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwxfHxtb3Rpb24lMjBkZXNpZ24lMjB2aWRlbyUyMHN0dWRpbyUyMGRhcmslMjBpbnRlcmZhY2V8ZW58MHx8fHwxNzkwODg2NTkzfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Studio motion preview dark UI background"
+    },
+    {
+      "category": "sample_logo_placeholder",
+      "url": "https://images.unsplash.com/photo-1720962158813-29b66b8e23e1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHw0fHxtb3Rpb24lMjBkZXNpZ24lMjB2aWRlbyUyMHN0dWRpbyUyMGRhcmslMjBpbnRlcmZhY2V8ZW58MHx8fHwxNzkwODg2NTkzfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Sample minimalist studio emblem"
+    }
+  ],
+  "testing_attributes": {
+    "rule": "Touts les éléments interactifs doivent obligatoirement posséder un attribut data-testid explicite.",
+    "examples": [
+      "data-testid='agnes-api-key-input'",
+      "data-testid='agnes-api-key-save-button'",
+      "data-testid='agnes-api-key-delete-button'",
+      "data-testid='motion-prompt-textarea'",
+      "data-testid='duration-select-30s'",
+      "data-testid='aspect-ratio-16-9'",
+      "data-testid='generate-motion-button'",
+      "data-testid='video-player-play-button'",
+      "data-testid='video-player-timecode'",
+      "data-testid='export-mp4-button'",
+      "data-testid='scene-card-1'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Utiliser le français pour l'intégralité de l'interface (labels, boutons, notifications sonner, messages d'erreur).",
+    "Implémenter l'enregistrement et la validation de la clé API Agnes AI dans localStorage sous la clé 'agnes_ai_api_key'.",
+    "Créer un moteur Canvas vidéo dynamique qui restitue les scènes du storyboard avec typographies cinétiques, formes vectorielles animées et transitions fluides.",
+    "Veiller à ce qu'aucun texte n'ait un contraste insuffisant sur fond sombre (respecter les couleurs spécifiées).",
+    "Assurer la présence de tous les attributs data-testid sur chaque contrôle interactif.",
+    "Proposer des exemples de prompts prédéfinis prêts à l'emploi en 1 clic pour accélérer les tests."
+  ]
+}
