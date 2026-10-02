@@ -1,0 +1,38 @@
+{
+  "summary": "First-pass testing of Agnes Motion Studio. Backend: 5/6 pytest tests pass. One real backend bug: /api/agnes/validate incorrectly reports bogus keys as valid because the Agnes /models endpoint is public (returns 200 without auth). Frontend: API-key validation UI, random theme, category filters, theme selection, prompt/duration/aspect-ratio selectors, and the generate button all work. The backend storyboard call succeeds. BUT the <StoryboardTimeline> component crashes with 'Cannot read properties of undefined (reading accent)' because it reads s.style.accent / s.style.bg[1] on each scene while buildProject() never attaches a `style` to scenes (theme palette lives at project.theme.palette). This single bug blocks everything downstream: scene cards never render, timeline never renders, video player cannot be driven, scene-3 seek cannot be tested, export cannot be tested. Needs retest after fix.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/agnes/validate", "issue": "Bogus API keys are reported as {valid:true}. Root cause: the Agnes AI /v1/models endpoint returns HTTP 200 without any Authorization header (confirmed by curl with 'Bearer bad-key' -> 200 + full model list). The validate route uses /models as its probe, so authentication is never actually verified. Fix: probe with a tiny POST to /v1/chat/completions (max_tokens:1) and treat 200 as valid / 401 as invalid, OR keep /models but also perform the chat probe before returning valid:true.", "priority": "HIGH"}
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "StoryboardTimeline (also used in scene cards)", "issue": "Runtime error 'Cannot read properties of undefined (reading accent)'. The component references s.style.accent and s.style.bg[1] on every scene, but /app/frontend/src/lib/storyboard.js -> buildProject() does NOT attach a `style` field to scenes. The theme palette is at project.theme.palette (keys: primary, secondary, accent, text, bgDark). Fix either (a) attach a per-scene style in buildProject (e.g. style: { accent: theme.palette.accent, bg: [theme.palette.bgDark, theme.palette.primary] }) or (b) in StoryboardTimeline, destructure project.theme and use project.theme.palette.accent / palette.primary / palette.bgDark directly instead of s.style.*. This bug blocks ALL downstream flows (scene cards, timeline, video player, export).", "selector": "[data-testid=storyboard-timeline]", "priority": "CRITICAL"}
+    ],
+    "integration_issues": [
+      {"flow": "Generate -> storyboard render", "issue": "Backend returns a valid storyboard (confirmed via API test); the frontend receives it and buildProject runs, but rendering of StoryboardTimeline then throws (see UI bug above). Progress tracker reaches final step but UI crashes before cards appear.", "affected_selectors": ["[data-testid=scene-card-1]", "[data-testid=scene-card-2]", "[data-testid=scene-card-3]", "[data-testid=scene-card-4]", "[data-testid=scene-card-5]", "[data-testid=storyboard-timeline]"]},
+      {"flow": "Video player + Export", "issue": "Could not be tested because the storyboard crash prevents the player/export panel from becoming functional. Needs retest after the StoryboardTimeline bug is fixed.", "affected_selectors": ["[data-testid=video-player-play-button]", "[data-testid=video-player-scrubber]", "[data-testid=video-player-restart-button]", "[data-testid=speed-2x]", "[data-testid=toggle-grid-button]", "[data-testid=export-mp4-button]"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "FIX FRONTEND CRITICAL: StoryboardTimeline.jsx references s.style.accent/s.style.bg[1] which do not exist. Either attach style per scene in buildProject() or read from project.theme.palette directly in the component. This is blocking all downstream UI tests.",
+    "FIX BACKEND: /api/agnes/validate must actually verify the key. The /v1/models endpoint of Agnes AI is public (returns 200 without auth). Switch the primary probe to a 1-token chat/completions call, or chain /models + chat probe.",
+    "Update backend test to reflect: once validate is fixed, test_invalid_key will pass as-is (expects valid:false)."
+  ],
+  "critical_code_review_comments": [
+    "StoryboardTimeline couples to a non-existent `scene.style` schema. buildProject does not attach any theme-derived style per scene -- component and data model are out of sync.",
+    "/api/agnes/validate relies on a public endpoint for authentication. This is a security/UX bug: any arbitrary string is reported as a valid key.",
+    "No React error boundary around the studio tree -- any component throw blanks the whole page; adding a boundary would at least surface a graceful fallback (nice-to-have)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "83% (5/6 pytest)", "frontend": "~30% (key validation, themes, prompt/duration/ratio OK; storyboard, player, export blocked)"},
+  "test_credentials": "Agnes AI API key sk-vYLHAgwoxEGYLhlLkMx3Qm89DmAnrVxGnTQR2h3WMYwEbiDy (from /app/memory/test_credentials.md). No app login.",
+  "seed_data_creation": "None.",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Backend pytest file: /app/backend/tests/backend_test.py (6 tests). The failing test is TestValidate::test_invalid_key which is actually correct -- the backend is wrong. After both fixes land, re-run: `REACT_APP_BACKEND_URL=<url> pytest /app/backend/tests/backend_test.py -v` then run the full Playwright flow (validate key -> pick theme -> fill prompt -> 30s/16:9 -> generate -> wait up to 120s for [data-testid=scene-card-1] -> play, scrub, scene-card-3 seek, restart, speed-2x, toggle-grid -> export). MediaRecorder MP4 may fall back to WebM in headless -- acceptable per spec.",
+  "rca of the issue": "Frontend crash RCA: /app/frontend/src/components/studio/StoryboardTimeline.jsx lines 48 & 77 read `s.style.accent` and `s.style.bg[1]`. /app/frontend/src/lib/storyboard.js buildProject() maps scenes to {id,index,role,label,start,end,duration,headline,subtext,keywords} -- no `style`. Repro: enter valid key, pick any theme, fill prompt, click Generate, wait ~5s -> runtime error overlay 'Cannot read properties of undefined (reading accent)'. Mitigation: attach style per scene from project.theme.palette in buildProject OR consume project.theme.palette directly in StoryboardTimeline. Backend validate RCA: curl https://apihub.agnes-ai.com/v1/models -H 'Authorization: Bearer bad-key' returns HTTP 200 + model list. Mitigation: use chat/completions probe (max_tokens:1) which does require a valid key (401 for bad)."
+}
